@@ -55,16 +55,24 @@ def mark_done(args,database):
     update(args,database,status="done")
 
 def list_task(args,database):
+    #List all tasks
+    if args.status is None:
+        print ("{:<8} {:<30} {:<10} {:<20} {:<15}".format('Id','description','status','createdAt','updatedAt'))
+        for id ,data in database.items():
+            vals=data.values()
+            des,stat,create,update = vals
+            print(f"{id:<8} {des:<30} {stat:<10} {create:<20} {update:<15}")
 
+    #Listing tasks based only on status
     print ("{:<8} {:<30} {:<10} {:<20} {:<15}".format('Id','description','status','createdAt','updatedAt'))
     for id ,data in database.items():
         vals=data.values()
         des,stat,create,update = vals
-        print(f"{id:<8} {des:<30} {stat:<10} {create:<20} {update:<15}")
+        if stat==str(args.status):
+            print(f"{id:<8} {des:<30} {stat:<10} {create:<20} {update:<15}")
 
 
-
-#for the json file
+#File handling
 def save(database_path,data):
     with open(database_path,"w") as f:
         json.dump(data,f)
@@ -81,6 +89,8 @@ def load(database_path):
 def _arg_parse_conf() -> argparse.ArgumentParser :
     parser = argparse.ArgumentParser(prog="tasker")
     subparsers = parser.add_subparsers(dest="commands",required=True)
+    #database path
+    parser.add_argument("--db",dest="filename",help="Specify database location.",default="tasker.json")
     #add method
     parse_add = subparsers.add_parser("add",help="Add a new task.")
     parse_add.add_argument("description",type=str)
