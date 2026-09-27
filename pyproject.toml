@@ -1,0 +1,33 @@
+[project]
+name = "tasker"
+version = "1.0.0"
+description = "A CLI program to manage your personalized tasks"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Your Name", email = "you@example.com" }
+]
+keywords = ["tasks", "todo", "cli", "productivity"]
+
+dependencies = [
+
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=24.0",
+    "ruff>=0.4",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/Arstrog/TaskCli"
+
+[project.scripts]
+tasker = "tasker:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

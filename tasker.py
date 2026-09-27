@@ -9,13 +9,17 @@
 #--list all completed tasks
 #--list all in protgress
 #--list all not started
+from ast import arg
 from datetime import datetime
 import json
 import os
+from pathlib import Path
 import sys
 import argparse
 
-
+DEFAULT_PATH = Path.home() / ".tasker" / "tasker.json"
+TEST_PATH = "tests.json"
+STATUS_CHOICE = ["todo","done","in-progres"]
 
 def add(args,database) -> None:
 
@@ -28,40 +32,48 @@ def add(args,database) -> None:
         "updatedAt":today
     }
     #for now:
-    print(f"Task added successfully (Id: {id})")
+    list_task(args,database,ID=id)
 
-def update(args,database,status=None):
+def update(args,database,STATUS=None):
     #args needed are id and description
-    id = str(args.id)
+    id = str(args.id) if args.id >0 else sys.exit()
     description = str(args.description)
-    status = str(args.status)
-    if status is not None:
+    status = str(args.status) if args.status is not None else "todo"
+    if STATUS is not None and STATUS in STATUS_CHOICE:
         database[id]["status"]=status
     if id in database:
         database[id]["description"]=description
         database[id]["updatedAt"]=datetime.now().strftime("%d-%m-%Y:%H:%M:%S")
+    list_task(args,database,ID=id)
 
 
 def delete(args,database):
-    id = str(args.id)
+    id = str(args.id) if args.id > 0 else sys.exit()
     if int(id)<=0 or (id not in database):
         sys.exit(f"Task with id:{id} does not exist.")
     database.pop(id)
 
 def mark_in_progress(args,database):
-    update(args,database,status="in-progress")
+    update(args,database,STATUS="in-progress")
 
 def mark_done(args,database):
-    update(args,database,status="done")
+    update(args,database,STATUS="done")
 
-def list_task(args,database):
+def list_task(args,database,ID=None):
     #List all tasks
+    if ID is not None and ID in database:
+        print ("{:<8} {:<30} {:<10} {:<20} {:<15}".format('Id','description','status','createdAt','updatedAt'))
+        des,stat,create,update = database[ID].values()
+        print(f"{ID:<8} {des:<30} {stat:<10} {create:<20} {update:<15}")
+        return
+
     if args.status is None:
         print ("{:<8} {:<30} {:<10} {:<20} {:<15}".format('Id','description','status','createdAt','updatedAt'))
         for id ,data in database.items():
             vals=data.values()
             des,stat,create,update = vals
             print(f"{id:<8} {des:<30} {stat:<10} {create:<20} {update:<15}")
+        return
 
     #Listing tasks based only on status
     print ("{:<8} {:<30} {:<10} {:<20} {:<15}".format('Id','description','status','createdAt','updatedAt'))
@@ -90,7 +102,7 @@ def _arg_parse_conf() -> argparse.ArgumentParser :
     parser = argparse.ArgumentParser(prog="tasker")
     subparsers = parser.add_subparsers(dest="commands",required=True)
     #database path
-    parser.add_argument("--db",dest="filename",help="Specify database location.",default="tasker.json")
+    parser.add_argument("--db",dest="filename",type=Path,help="Specify database location.",default=TEST_PATH)
     #add method
     parse_add = subparsers.add_parser("add",help="Add a new task.")
     parse_add.add_argument("description",type=str)
@@ -100,7 +112,7 @@ def _arg_parse_conf() -> argparse.ArgumentParser :
     parse_update = subparsers.add_parser("update",help="Update the description of a task.")
     parse_update.add_argument("id",type=int)
     parse_update.add_argument("description",type=str)
-    # parse_update.add_argument("status",nargs="?",choices=["todo","in-progress","done"],default=None)
+    parse_update.add_argument("status",nargs="?",choices=["todo","in-progress","done"],default=None)
     parse_update.set_defaults(func=update)
 
     #delete
@@ -123,23 +135,13 @@ def _arg_parse_conf() -> argparse.ArgumentParser :
 
     return parser
 
-
-
-
-
-
-
-
 def main():
-    db = load("tests.json")
+
     parser = _arg_parse_conf()
     args=parser.parse_args()
+    db = load(args.filename)
     args.func(args,db)
-    save("tests.json",db)
-
-
-
-
+    save(args.filename,db)
 
 if __name__=="__main__":
     sys.exit(main())
