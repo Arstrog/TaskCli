@@ -9,16 +9,16 @@
 #--list all completed tasks
 #--list all in protgress
 #--list all not started
-from ast import arg
-from datetime import datetime
 import json
-import os
-from pathlib import Path
 import sys
 import argparse
+from ast import arg
+from datetime import datetime
+from pathlib import Path
+
 
 DEFAULT_PATH = Path.home() / ".tasker" / "tasker.json"
-TEST_PATH = "tests.json"
+# TEST_PATH = "tests.json"
 STATUS_CHOICE = ["todo","done","in-progres"]
 
 def add(args,database) -> None:
@@ -31,11 +31,9 @@ def add(args,database) -> None:
         "createdAt":today,
         "updatedAt":today
     }
-    #for now:
     list_task(args,database,ID=id)
 
 def update(args,database,STATUS=None):
-    #args needed are id and description
     id = str(args.id) if args.id >0 else sys.exit()
     description = str(args.description)
     status = str(args.status) if args.status is not None else "todo"
@@ -97,12 +95,12 @@ def load(database_path):
     except (FileNotFoundError, json.decoder.JSONDecodeError):
         return {}
 
-
+#Custom parser
 def _arg_parse_conf() -> argparse.ArgumentParser :
     parser = argparse.ArgumentParser(prog="tasker")
     subparsers = parser.add_subparsers(dest="commands",required=True)
     #database path
-    parser.add_argument("--db",dest="filename",type=Path,help="Specify database location.",default=TEST_PATH)
+    parser.add_argument("--db",dest="filename",type=Path,help="Specify database location.",default=DEFAULT_PATH)
     #add method
     parse_add = subparsers.add_parser("add",help="Add a new task.")
     parse_add.add_argument("description",type=str)

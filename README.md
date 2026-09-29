@@ -16,6 +16,16 @@ After the installation you can use tasker from anywhere in your system.
 
 ## Usage
 
+```bash
+$ tasker add [-h] description
+$ tasker update [-h] id description
+$ tasker delete [-h] id
+$ tasker mark-done [-h] id
+$ tasker mark-in-progress [-h] id
+$ tasker list [-h] [{in-progress, todo, done}] 
+```
 
 
 ## License
+This project is licensed under the **MIT License**.
+You are free to use, modify, and distribute it.
