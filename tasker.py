@@ -19,7 +19,7 @@ from pathlib import Path
 
 DEFAULT_PATH = Path.home() / ".tasker" / "tasker.json"
 # TEST_PATH = "tests.json"
-STATUS_CHOICE = ["todo","done","in-progres"]
+STATUS_CHOICE = ["todo","done","in-progress"]
 
 def add(args,database) -> None:
 
@@ -38,7 +38,7 @@ def update(args,database,STATUS=None):
     description = str(args.description)
     status = str(args.status) if args.status is not None else "todo"
     if STATUS is not None and STATUS in STATUS_CHOICE:
-        database[id]["status"]=status
+        database[id]["status"]=STATUS
     if id in database:
         database[id]["description"]=description
         database[id]["updatedAt"]=datetime.now().strftime("%d-%m-%Y:%H:%M:%S")
