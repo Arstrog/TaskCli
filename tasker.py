@@ -1,20 +1,9 @@
-#CLI application
-# store tasks in json file
-# User:
-#--add
-# --delete
-# update
-#--mark task (in progress) or done
-#--list all tasks
-#--list all completed tasks
-#--list all in protgress
-#--list all not started
-import json
 import sys
 import argparse
 from ast import arg
 from datetime import datetime
 from pathlib import Path
+import json
 
 
 DEFAULT_PATH = Path.home() / ".tasker" / "tasker.json"
